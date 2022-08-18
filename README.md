@@ -1,1 +1,1 @@
-A simple connect 4 game
+A simple connect 4 game.
