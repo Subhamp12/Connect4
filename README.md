@@ -8,7 +8,6 @@ Setting
 Player
 	- name
 
-
 During the game
 ------------------------
 Board
