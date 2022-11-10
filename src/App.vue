@@ -7,7 +7,7 @@ import Board from './components/Board.vue';
   <button v-if="gameMode === 'initial'" @click="startGame">Start Game</button>
   <Board v-if="gameMode !== 'initial'" :game-mode="gameMode" :end-game="endGame"  />
   <button v-if="gameMode === 'play'" @click="endGame('end')">End Game</button>
-  <button v-if="gameMode === 'play' || gameMode === 'end' || gameMode === 'tie'" @click="restartGame">Restart Game</button>
+  <button v-if="gameMode === 'play' || gameMode === 'end' || gameMode === 'tie' || gameMode === 'win1'|| gameMode === 'win2'" @click="restartGame">Restart Game</button>
 </template>
 
 
