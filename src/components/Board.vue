@@ -1,86 +1,109 @@
 <template>
     <div class="board">
-        <div class="row" v-for="(row, rowIndex) in board">
+        <div class="row" :key="rowIndex" v-for="(row, rowIndex) in board">
             <div class="square" :class="{
-'player-1': column === 1,
-'player-2': column === 2,
-            }" v-for="(column, columnIndex) in row" @click="updateCell(rowIndex, columnIndex)" />
+                'player-1': column === 1,
+                'player-2': column === 2,
+            }" v-for="(column, columnIndex) in row" @click="updateCell(columnIndex)" :key="columnIndex" />
         </div>
     </div>
-    <div>Current player turn: {{currentPlayer}}</div>
-    <div>Current next row: {{blank}}</div>
-    <div>Game Mode: {{gameMode}}</div>
+    <div>Current player turn: {{ currentPlayer }}</div>
+    <div>Current next row: {{ blank }}</div>
+    <div>Winner: <span v-if="winner === null && gameOver">Tie</span><span v-if="winner === 1 && gameOver">Player
+            1</span><span v-if="winner === 2 && gameOver">Player 2</span></div>
+    <button @click="restartGame">Reset Board</button>
 </template>
 
 <script>
-    export default {
-        props: {
-            gameMode: String,
-            endGame: Function,
-        },
-        data() {
-            return {
-                board: [
-        [null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null],
-        [null, null, null, null, null, null, null]
-      ],
-      blank: [6,6,6,6,6,6,6],
-      currentPlayer: 1
+import { checkWinner } from '../utils/checkWinner'
+export default {
+    props: {
+        gameOver: Boolean,
+        endGame: Function,
+        startGame: Function
+    },
+    data() {
+        return {
+            board: [
+                [null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null],
+            ],
+            blank: [6, 6, 6, 6, 6, 6, 6],
+            currentPlayer: 1,
+            winner: null
+        };
+    },
+    methods: {
+        updateCell(columnIndex) {
+            // If game is over then don't update the board
+            if (this.gameOver) {
+                return;
             }
-        },
-        methods: {
-            updateCell(rowIndex, columnIndex) {
-                // Check and see if game is a draw
-                if (this.blank[columnIndex] > 0) {
-                    this.blank[columnIndex] -= 1;
-                    this.board[this.blank[columnIndex]][columnIndex] = this.currentPlayer;
-                }
-                if (this.blank.every(num => num === 0)){
-                    // Update gameMode to say tie
-                    this.endGame('tie');
-                } else if (this.gameMode === "end") {
-                    return;
-                }
-                 else {
+            // Only process a move if it's valid
+            else if (this.blank[columnIndex] > 0) {
+                this.blank[columnIndex] -= 1;
+                this.board[this.blank[columnIndex]][columnIndex] = this.currentPlayer;
+                // Check for a tie
+                if (this.blank.every((num) => num === 0)) {
+                    this.endGame()
+                } else if (checkWinner(this.board)) {
+                    this.endGame()
+                    this.winner = this.currentPlayer;
+                } else {
                     this.updatePlayer();
                 }
-            },
-            updatePlayer() {
-                if (this.currentPlayer === 1) {
-                    this.currentPlayer = 2
-                }
-                else {
-                    this.currentPlayer = 1
-                }
-            },
-            resetBoard() {
-              initialBoard()
             }
+        },
+        updatePlayer() {
+            if (this.currentPlayer === 1) {
+                this.currentPlayer = 2;
+            } else {
+                this.currentPlayer = 1;
+            }
+        },
+        restartGame() {
+            this.board = [
+                [null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null],
+                [null, null, null, null, null, null, null],
+            ]
+            this.blank = [6, 6, 6, 6, 6, 6, 6]
+            this.currentPlayer = 1
+            this.winner = null
+            this.startGame()
         }
-    }
-    </script>
+    },
+};
+</script>
 <style>
-    .board {
-        margin-bottom: 25px;
-    }
-    .square {
-        width: 25px;
-        height: 25px;
-        background: #cccccc;
-        margin: 1px;
-        border-radius: 50%;
-    }
-    .player-1 {
-        background: yellow;
-    }
-    .player-2 {
-        background: red;
-    }
-    .row {
-        display: flex;
-    }
+.board {
+    margin-bottom: 25px;
+}
+
+.square {
+    width: 25px;
+    height: 25px;
+    background: #cccccc;
+    margin: 1px;
+    border-radius: 50%;
+}
+
+.player-1 {
+    background: yellow;
+}
+
+.player-2 {
+    background: red;
+}
+
+.row {
+    display: flex;
+}
 </style>
