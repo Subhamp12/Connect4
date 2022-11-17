@@ -4,31 +4,24 @@ import Board from './components/Board.vue';
 
 <template>
   <h1>Connect 4</h1>
-  <button v-if="gameMode === 'initial'" @click="startGame">Start Game</button>
-  <Board v-if="gameMode !== 'initial'" :game-mode="gameMode" :end-game="endGame"  />
-  <button v-if="gameMode === 'play'" @click="endGame('end')">End Game</button>
-  <button v-if="gameMode === 'play' || gameMode === 'end' || gameMode === 'tie' || gameMode === 'win1'|| gameMode === 'win2'" @click="restartGame">Restart Game</button>
+  <Board :gameOver="gameOver" :endGame="endGame" :startGame="startGame" />
 </template>
 
 
 
 <script>
-// TODO: Change gameMode to an ENUM
 export default {
   data() {
     return {
-      gameMode: 'initial',
+      gameOver: false
     }
   },
   methods: {
     startGame() {
-      this.gameMode = 'play'
+      this.gameOver = false;
     },
-    endGame(mode) {
-      this.gameMode = mode
-    },
-     restartGame() {
-      this.gameMode = 'initial'
+    endGame() {
+      this.gameOver = true
     }
   }
 }
